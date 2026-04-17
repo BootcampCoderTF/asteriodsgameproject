@@ -1,7 +1,7 @@
 import pygame
+from player import Player
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from logger import log_state
-import player
 
 def main():
     # inform the user the game is about to start loading a the size of the window that will open
@@ -13,10 +13,14 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
-    player_start_x = SCREEN_WIDTH / 2
-    player_start_y = SCREEN_HEIGHT / 2
-    gamer = player.Player(player_start_x, player_start_y)
 
+    # create groups for the sprites
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+
+    Player.containers = (updatable, drawable) # add player class to the groups
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2) # define the player start position
+    
     while True: # start an infinite loop
         log_state()
         for event in pygame.event.get():
@@ -24,8 +28,10 @@ def main():
                 return
         # creates a empty window
         screen.fill("black")
-        gamer.update(dt)
-        gamer.draw(screen)
+        # draw the player
+        updatable.update(dt)
+        for obj in drawable:
+            obj.draw(screen)
         pygame.display.flip()
 
         # limit the framerate to 60 FPS
